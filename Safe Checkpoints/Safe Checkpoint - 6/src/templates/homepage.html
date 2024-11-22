@@ -1,0 +1,215 @@
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>InkCode - Homepage</title>
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+
+        <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet" />
+        <script src="https://cdn.tailwindcss.com"></script>
+
+        <!-- Firebase -->
+        <script type="module">
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
+            import { getAuth } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-auth.js";
+
+            const firebaseConfig = {
+                apiKey: "AIzaSyBiRP_PJH38Gu5awnyOSW2qBCS0Hx3xOvQ",
+                authDomain: "inkcode-cadec.firebaseapp.com",
+                projectId: "inkcode-cadec",
+                storageBucket: "inkcode-cadec.appspot.com",
+                messagingSenderId: "342069436728",
+                appId: "1:342069436728:web:63adcd0ef4fd65b7b821cd",
+                measurementId: "G-3L6ZJ1GK2V"
+            };
+
+            // Initialize Firebase
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+        </script>
+    </head>
+    <body class="font-montserrat bg-[#2D2D2D] text-gray-300 h-screen">
+
+        <nav class="flex items-center h-[6%] w-full bg-[#1F1F1F] border-b border-[#4F4E4E] px-5">
+            <img src="/College Projects/Inkcode/assets/logo.png" alt="Logo" class="h-[25%] mr-auto">
+        </nav>
+
+        <main class="flex h-[94%] w-full">
+            <div id="sidemenu" class="h-full w-[18%] border-r border-[#4F4E4E] flex flex-col items-center justify-center">
+                <div id="profile" class="flex flex-col bg-[#383838] rounded-lg w-[85%] h-[25%] justify-center items-center gap-2">
+                    <div id="profileICN" class="bg-green-600 py-3 px-4 rounded-full text-white text-2xl font-semibold w-fit">{{ username[0] }}</div>
+                    <div id="username" class="text-[#D7D7D7] text-sm">{{ username }}</div>
+                    <div id="email" class="text-[#BCBCBC] text-xs">{{ email }}</div>
+                    <div id="logout" class="pt-2 text-xs font-semibold cursor-pointer">Logout <i class="ri-logout-box-line"></i></div>
+                </div>            
+            </div> 
+            <div id="main_area" class="h-full w-[82%] flex flex-col px-[45px] py-[85px]">
+                <div id="new_prjct" class="flex h-fit w-fit gap-[25px]">
+                    <div id="create_new_p_projct" class="flex bg-[#383838] h-fit w-fit gap-[15px] px-[20px] py-[22px] rounded-[10px]">
+                        <div id="ICN">
+                            <i class="ri-pen-nib-line text-[28px] bg-[#2670FF] px-[10px] py-[10px] rounded-[100%]"></i>
+                        </div>
+                        <div id="text">
+                            <p class="text-white text-[18px]">New personal project</p>
+                            <p class="text-[14px] text-[#A0A0A0]">non - collaborative</p>
+                        </div>
+                    </div>
+                    <div id="create_new_c_projct" class="flex bg-[#383838] h-fit w-fit gap-[15px] px-[20px] py-[22px] rounded-[10px]">
+                        <div id="ICN">
+                            <i class="ri-ball-pen-fill text-[28px] bg-[#9F31FF] px-[10px] py-[10px] rounded-[100%]"></i>
+                        </div>
+                        <div id="text">
+                            <p class="text-white text-[18px]">New team project</p>
+                            <p class="text-[14px] text-[#A0A0A0]">collaborative</p>
+                        </div>
+                    </div>
+                </div>
+                <div id="tabs" class="w-fit h-fit flex gap-[45px] text-white font-[500] py-[35px] pl-[3px]">
+                    <p>Personal projects</p>
+                    <p class="text-[#969696]">Team projects</p>
+                </div>
+                <div id="recentProjects" class="flex flex-col gap-4">
+                    <h2 class="text-white text-lg mb-2">Recent Projects</h2>
+                    <div id="projectsList" class="flex flex-col gap-2"></div> <!-- To display recent projects -->
+                </div>
+            </div>
+        </main>  
+
+        <!-- Modal for new project creation -->
+        <div id="newProjectModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+            <div class="bg-[#1F1F1F] p-8 rounded-lg w-[400px] relative">
+                <!-- Close Button (X) -->
+                <button id="closeModal" class="absolute top-2 right-2 text-white text-xl font-bold">&times;</button>
+                
+                <h2 class="text-white text-xl mb-4">Create New Project</h2>
+                <div>
+                    <label class="block text-gray-400 mb-1">Project Name</label>
+                    <input id="projectName" type="text" class="w-full bg-[#2D2D2D] border border-[#4F4E4E] rounded p-2 mb-4 text-white" required />
+                </div>
+                <div>
+                    <label class="block text-gray-400 mb-1">Language</label>
+                    <select id="projectLanguage" class="w-full bg-[#2D2D2D] border border-[#4F4E4E] rounded p-2 mb-4 text-white" required>
+                        <option value="C">C</option>
+                        <option value="C++">C++</option>
+                        <option value="Python">Python</option>
+                        <option value="JavaScript">JavaScript</option>
+                        <option value="HTML">HTML</option> <!-- Added HTML Option -->
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-gray-400 mb-1">Description (optional)</label>
+                    <textarea id="projectDescription" class="w-full bg-[#2D2D2D] border border-[#4F4E4E] rounded p-2 mb-4 text-white"></textarea>
+                </div>
+                <button id="createProjectBtn" class="bg-blue-500 text-white px-4 py-2 rounded">Create Project</button>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const modal = document.getElementById('newProjectModal');
+                const closeModalBtn = document.getElementById('closeModal');
+
+                // Open modal when "New personal project" is clicked
+                document.getElementById('create_new_p_projct').addEventListener('click', () => {
+                    modal.classList.remove('hidden');
+                });
+
+                // Close modal when the "X" button is clicked
+                closeModalBtn.addEventListener('click', () => {
+                    modal.classList.add('hidden');
+                });
+
+                // Close modal and create the project
+                document.getElementById('createProjectBtn').addEventListener('click', () => {
+                    const projectName = document.getElementById('projectName').value;
+                    const projectLanguage = document.getElementById('projectLanguage').value;
+                    const projectDescription = document.getElementById('projectDescription').value;
+
+                    if (projectName && projectLanguage) {
+                        localStorage.setItem('projectName', projectName);
+                        localStorage.setItem('projectLanguage', projectLanguage);
+                        if (projectDescription) {
+                            localStorage.setItem('projectDescription', projectDescription);
+                        } else {
+                            localStorage.removeItem('projectDescription'); // Remove if not provided
+                        }
+                        modal.classList.add('hidden');
+
+                        // Redirect based on language selection
+                        if (projectLanguage === "HTML" || projectLanguage === "html") {
+                            window.location.href = '/editor(2)'; // Redirect to HTML editor page
+                        } else {
+                            window.location.href = '/editor_collab'; // Redirect to the regular editor
+                        }
+                    } else {
+                        alert('Please fill out all required fields.');
+                    }
+                });
+
+                // Logout functionality
+                document.getElementById('logout').addEventListener('click', () => {
+                    window.location.href = '/logout'; // Redirect to login page after logout
+                });
+
+               // Populate recent projects section from IndexedDB
+                const projectsList = document.getElementById('projectsList');
+
+                function loadRecentProjects() {
+                    const dbRequest = indexedDB.open('InkCodeDB', 2);
+
+                    dbRequest.onsuccess = function(event) {
+                        const db = event.target.result;
+                        const transaction = db.transaction('projects', 'readonly');
+                        const store = transaction.objectStore('projects');
+                        const getAllRequest = store.getAll();
+
+                        getAllRequest.onsuccess = function(event) {
+                            const projects = event.target.result;
+
+                            if (projects.length > 0) {
+                                projects.forEach(project => {
+                                    const projectDiv = document.createElement('div');
+                                    projectDiv.classList.add('bg-[#383838]', 'p-4', 'rounded-lg', 'mb-2');
+                                    projectDiv.innerHTML = `
+                                        <h3 class="text-lg">${project.name}</h3>
+                                        <p class="text-gray-400">Language: ${project.language}</p>
+                                        <p class="text-gray-500">Timestamp: ${new Date(project.timestamp).toLocaleString()}</p>
+                                        <button class="bg-blue-500 text-white py-1 px-3 rounded-lg" id="openCodeBtn-${project.id}">Open</button>
+                                    `;
+                                    projectsList.appendChild(projectDiv);
+
+                                    // Add event listener for the Open button
+                                    const openButton = projectDiv.querySelector(`#openCodeBtn-${project.id}`);
+                                    openButton.addEventListener('click', () => {
+                                        // Open the project in the editor
+                                        localStorage.setItem('currentProject', JSON.stringify(project));
+                                        window.location.href = '/editor'; // Adjust as necessary
+                                    });
+                                });
+                            } else {
+                                projectsList.innerHTML = '<p class="text-gray-500">No recent projects found.</p>';
+                            }
+                        };
+
+                        getAllRequest.onerror = function(event) {
+                            console.error('Error fetching projects:', event.target.error);
+                        };
+                    };
+
+                    dbRequest.onerror = function(event) {
+                        console.error('Error opening IndexedDB for loading:', event.target.error);
+                    };
+                }
+
+
+                // Load recent projects when the page loads
+                loadRecentProjects();
+
+            });
+        </script>
+    </body>
+    </html>

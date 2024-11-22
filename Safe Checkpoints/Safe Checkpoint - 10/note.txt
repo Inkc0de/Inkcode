@@ -1,0 +1,11 @@
+login and signup working
+showing appropriate profile details
+personal project working
+user input working {for JS and Java}
+Java not working
+added HTML and CSS option
+fixed major bugs
+save and show code working (open not working)
+collaborative workingwith code running and input issue solved - (use grok for local hosting)
+editor_collab now take code name and language from homepage popup
+save code works in ngrok

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InkCode - Homepage</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-auth.js"></script>
+
+    <!-- Firebase config -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBiRP_PJH38Gu5awnyOSW2qBCS0Hx3xOvQ",
+            authDomain: "inkcode-cadec.firebaseapp.com",
+            projectId: "inkcode-cadec",
+            storageBucket: "inkcode-cadec.appspot.com",
+            messagingSenderId: "342069436728",
+            appId: "1:342069436728:web:63adcd0ef4fd65b7b821cd",
+            measurementId: "G-3L6ZJ1GK2V"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+    </script>
+</head>
+<body class="font-montserrat bg-[#2D2D2D] text-gray-300 h-screen">
+
+    <nav class="flex items-center h-[6%] w-full bg-[#1F1F1F] border-b border-[#4F4E4E] px-5">
+        <img src="/College Projects/Inkcode/assets/logo.png" alt="Logo" class="h-[25%] mr-auto">
+    </nav>
+
+    <main class="flex h-[94%] w-full">
+        <div id="sidemenu" class="h-full w-[18%] border-r border-[#4F4E4E] flex flex-col items-center justify-center">
+            <div id="profile" class="flex flex-col bg-[#383838] rounded-lg w-[85%] h-[25%] justify-center items-center gap-2">
+                <div id="profileICN" class="bg-green-600 py-3 px-4 rounded-full text-white text-2xl font-semibold w-fit">{{ username[0] }}</div>
+                <div id="username" class="text-[#D7D7D7] text-sm">{{ username }}</div>
+                <div id="email" class="text-[#BCBCBC] text-xs">{{ email }}</div>
+                <div id="logout" class="pt-2 text-xs font-semibold cursor-pointer">Logout <i class="ri-logout-box-line"></i></div>
+            </div>            
+        </div> 
+        <div id="main_area" class="h-full w-[82%] flex flex-col px-[45px] py-[85px]">
+            <div id="new_prjct" class="flex h-fit w-fit gap-[25px]">
+                <div id="create_new_p_projct" class="flex bg-[#383838] h-fit w-fit gap-[15px] px-[20px] py-[22px] rounded-[10px]">
+                    <div id="ICN">
+                        <i class="ri-pen-nib-line text-[28px] bg-[#2670FF] px-[10px] py-[10px] rounded-[100%]"></i>
+                    </div>
+                    <div id="text">
+                        <p class="text-white text-[18px]">New personal project</p>
+                        <p class="text-[14px] text-[#A0A0A0]">non - collaborative</p>
+                    </div>
+                </div>
+                <div id="create_new_c_projct" class="flex bg-[#383838] h-fit w-fit gap-[15px] px-[20px] py-[22px] rounded-[10px]">
+                    <div id="ICN">
+                        <i class="ri-ball-pen-fill text-[28px] bg-[#9F31FF] px-[10px] py-[10px] rounded-[100%]"></i>
+                    </div>
+                    <div id="text">
+                        <p class="text-white text-[18px]">New team project</p>
+                        <p class="text-[14px] text-[#A0A0A0]">collaborative</p>
+                    </div>
+                </div>
+            </div>
+            <div id="tabs" class="w-fit h-fit flex gap-[45px] text-white font-[500] py-[35px] pl-[3px]">
+                <div id="savedProjects" class="mt-6">
+                    <h2 class="text-white text-lg">Recent Projects</h2>
+                    <div id="projectsContainer" class="flex flex-col gap-2">
+                        <!-- Recent projects will be populated here -->
+                    </div>                    
+                </div>
+            </div>
+        </div>
+    </main>  
+
+    <!-- Modal for new project creation -->
+    <div id="newProjectModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+        <div class="bg-[#1F1F1F] p-8 rounded-lg w-[400px] relative">
+            <!-- Close Button (X) -->
+            <button id="closeModal" class="absolute top-2 right-2 text-white text-xl font-bold">&times;</button>
+            
+            <h2 class="text-white text-xl mb-4">Create New Project</h2>
+            <div>
+                <label class="block text-gray-400 mb-1">Project Name</label>
+                <input id="projectName" type="text" class="w-full bg-[#2D2D2D] border border-[#4F4E4E] rounded p-2 mb-4 text-white" required />
+            </div>
+            <div>
+                <label class="block text-gray-400 mb-1">Language</label>
+                <select id="projectLanguage" class="w-full bg-[#2D2D2D] border border-[#4F4E4E] rounded p-2 mb-4 text-white" required>
+                    <option value="C">C</option>
+                    <option value="C++">C++</option>
+                    <option value="Python">Python</option>
+                    <option value="JavaScript">JavaScript</option>
+                    <option value="HTML">HTML</option> <!-- Added HTML Option -->
+                </select>
+            </div>
+            <div>
+                <label class="block text-gray-400 mb-1">Description (optional)</label>
+                <textarea id="projectDescription" class="w-full bg-[#2D2D2D] border border-[#4F4E4E] rounded p-2 mb-4 text-white"></textarea>
+            </div>
+            <button id="createProjectBtn" class="bg-blue-500 text-white px-4 py-2 rounded">Create Project</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const modal = document.getElementById('newProjectModal');
+            const closeModalBtn = document.getElementById('closeModal');
+            const projectsContainer = document.getElementById('projectsContainer');
+
+            // Open modal when "New personal project" is clicked
+            document.getElementById('create_new_p_projct').addEventListener('click', () => {
+                modal.classList.remove('hidden');
+            });
+
+            // Close modal when the "X" button is clicked
+            closeModalBtn.addEventListener('click', () => {
+                modal.classList.add('hidden');
+            });
+
+            // Close modal and create the project
+            document.getElementById('createProjectBtn').addEventListener('click', () => {
+                const projectName = document.getElementById('projectName').value;
+                const projectLanguage = document.getElementById('projectLanguage').value;
+                const projectDescription = document.getElementById('projectDescription').value;
+
+                if (projectName && projectLanguage) {
+                    // Save project data in localStorage
+                    const projectKey = `${projectName}-${projectLanguage}`; // Unique key
+                    const projectData = {
+                        name: projectName,
+                        language: projectLanguage,
+                        description: projectDescription || ''
+                    };
+                    localStorage.setItem(projectKey, JSON.stringify(projectData));
+                    modal.classList.add('hidden');
+
+                    // Redirect based on language selection
+                    if (projectLanguage === "HTML" || projectLanguage === "html") {
+                        window.location.href = '/editor(2)'; // Redirect to HTML editor page
+                    } else {
+                        window.location.href = '/editor'; // Redirect to the regular editor
+                    }
+                } else {
+                    alert('Please fill out all required fields.');
+                }
+            });
+
+            // Load recent projects from localStorage
+            function loadRecentProjects() {
+                const recentProjects = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key && key.includes('-')) {
+                        const project = JSON.parse(localStorage.getItem(key));
+                        recentProjects.push(project);
+                    }
+                }
+
+                if (recentProjects.length === 0) {
+                    projectsContainer.innerHTML = '<p class="text-gray-500">No recent projects found.</p>';
+                } else {
+                    projectsContainer.innerHTML = '';
+                    recentProjects.forEach(project => {
+                        const projectDiv = document.createElement('div');
+                        projectDiv.className = 'flex justify-between items-center bg-[#383838] p-3 rounded';
+                        projectDiv.innerHTML = `
+                            <div class="text-white">
+                                <strong>${project.name}</strong> (${project.language})<br>
+                                <span class="text-gray-400 text-sm">${project.description}</span>
+                            </div>
+                            <button class="bg-blue-500 text-white px-2 py-1 rounded" onclick="openProject('${project.name}', '${project.language}')">Open</button>
+                        `;
+                        projectsContainer.appendChild(projectDiv);
+                    });
+                }
+            }
+
+            // Function to open project in the editor
+            window.openProject = function(name, language) {
+                const projectKey = `${name}-${language}`;
+                const projectData = JSON.parse(localStorage.getItem(projectKey));
+                if (projectData) {
+                    // Redirect to editor with project details as query parameters
+                    const description = encodeURIComponent(projectData.description);
+                    window.location.href = `/editor?name=${encodeURIComponent(projectData.name)}&language=${encodeURIComponent(projectData.language)}&description=${description}`;
+                }
+            };
+
+            loadRecentProjects();
+
+            // Logout function (you might want to implement it)
+            document.getElementById('logout').addEventListener('click', () => {
+                sessionStorage.clear();
+                // localStorage.clear();
+                window.location.href = '/logout';
+            });
+        });
+    </script>
+</body>
+</html>

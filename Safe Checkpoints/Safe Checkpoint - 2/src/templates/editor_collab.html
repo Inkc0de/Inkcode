@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Collaborative Code Editor</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+    #editor-container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    #editor {
+      flex-grow: 1;
+      width: 100%;
+      height: 100%;
+    }
+    #code-input-container {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      background-color: #f1f1f1;
+      border-bottom: 1px solid #ccc;
+    }
+    #code-input {
+      flex-grow: 1;
+      margin-right: 10px;
+      padding: 5px;
+      font-family: monospace;
+      font-size: 14px;
+    }
+    #run {
+      padding: 5px 10px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    #output {
+      flex-grow: 1;
+      padding: 10px;
+      background-color: #f1f1f1;
+      overflow-y: auto;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.33.0/min/vs/loader.js"></script>
+  <script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
+</head>
+<body>
+
+  <div id="editor-container">
+    <div id="code-input-container">
+      <textarea id="code-input" placeholder="Write your code here..."></textarea>
+      <button id="run">Run Code</button>
+    </div>
+    <div id="editor"></div>
+    <div id="output"></div>
+  </div>
+
+  <script>
+    const socket = io.connect('http://localhost:5000');
+    let editor;
+
+    require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.33.0/min/vs' }});
+    require(['vs/editor/editor.main'], function() {
+      editor = monaco.editor.create(document.getElementById('editor'), {
+        value: '',
+        language: 'javascript'
+      });
+
+      // Send code changes to the server when the content is modified
+      editor.onDidChangeModelContent(() => {
+        const code = editor.getValue();
+        socket.emit('code_update', code);
+      });
+    });
+
+    // Receive code updates and update the editor
+    socket.on('update_code', (data) => {
+      if (editor.getValue() !== data) {
+        editor.setValue(data);
+      }
+    });
+
+    // Run the code inside the editor and display the result
+    document.getElementById('run').addEventListener('click', () => {
+      const code = editor.getValue();
+      try {
+        // Send code to the server for safe execution
+        socket.emit('execute_code', code);
+      } catch (error) {
+        document.getElementById('output').innerText = 'Error: ' + error.message;
+      }
+    });
+
+    // Listen for execution results from the server
+    socket.on('execution_result', (result) => {
+      document.getElementById('output').innerText = result;
+    });
+
+    // Update the editor with the code from the textarea
+    document.getElementById('code-input').addEventListener('input', () => {
+      const code = document.getElementById('code-input').value;
+      editor.setValue(code);
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,15 @@
+git clone https://github.com/Inkc0de/inkcode or git clone  https://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@github.com/Inkc0de/inkcode.git
+
+cd inkcode
+
+{make changes}
+
+git add .
+
+git commit -m "Your commit message"
+
+git remote set-url origin https://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@github.com/Inkc0de/inkcode.git {optional}
+
+git pull {optional}
+
+git push origin main

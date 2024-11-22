@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>InkCode - Notifications</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='Logo - V3.png') }}">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Firebase v8 CDN Scripts (Non-modular) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+
+    <script>
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+            apiKey: "AIzaSyAsAjxes6vzJr0gfVz69dpLXtjabzIxVo0",
+            authDomain: "inkcode-56af8.firebaseapp.com",
+            databaseURL: "https://inkcode-56af8-default-rtdb.firebaseio.com",
+            projectId: "inkcode-56af8",
+            storageBucket: "inkcode-56af8.appspot.com",
+            messagingSenderId: "610257821163",
+            appId: "1:610257821163:web:8e3eecdac0a408adc68dae",
+            measurementId: "G-C504CHHC3W"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        // Firebase services
+        const auth = firebase.auth();
+        const storage = firebase.storage();
+        const recentProjectsContainer = document.getElementById('recentProjects');
+
+    </script>
+    
+    <style>
+        /* CSS boilerplate */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+
+</head>
+
+<body class="font-montserrat bg-[#2D2D2D] text-gray-300 h-screen">
+
+    <main class="flex h-[100%] w-full">
+        <div id="sidemenu" class="h-full w-[3%] bg-[#1F1F1F] flex flex-col items-center py-[10px] transition-all duration-500 ease-in-out">
+            <!-- Top Section (menu, profile, icons) -->
+            <i id="menu" class="ri-menu-line text-white text-[20px] mb-[25px] cursor-pointer"></i>
+        
+            <div class="flex items-center mb-[75px]">
+                <div id="profileICN" class="bg-green-600 rounded-full text-white text-[16px] font-[500] w-[28px] h-[28px] flex items-center justify-center">
+                    {{ username[0] | capitalize }}
+                </div>
+                <div id="profileDetails" class="flex flex-col ml-2 hidden">
+                    <div id="username" class="text-[#D7D7D7] text-sm">{{ username }}</div>
+                    <div id="email" class="text-[#BCBCBC] text-xs">{{ email }}</div>
+                </div>
+            </div>
+        
+            <!-- Profile Section (Hidden initially) -->
+            <div id="profile" class="flex flex-col bg-[#383838] rounded-lg w-[85%] h-[25%] justify-center items-center gap-2 hidden">
+                <div id="logout" class="pt-2 text-xs font-semibold cursor-pointer">Logout <i class="ri-logout-box-line"></i></div>
+            </div>
+        
+            <!-- Icons with hover effect -->
+            <div class="flex flex-col gap-[10px] text-white items-start mt-4" id="menu-items">
+                <div class="menu-item flex items-center">
+                    <a href="/homepage" class="relative group">
+                        <i class="ri-home-4-fill text-[20px] transition-all duration-300 ease-in-out group-hover:bg-gradient-to-r group-hover:from-purple-400 group-hover:to-pink-500 group-hover:text-transparent group-hover:bg-clip-text"></i>
+                    </a>
+                    <a href="/homepage">
+                        <span class="hidden ml-2 text-[14px]">Home</span>
+                    </a>
+                </div>
+                <div class="menu-item flex items-center">
+                    <a href="/community" class="relative group">
+                        <i class="ri-global-fill text-[20px] transition-all duration-300 ease-in-out group-hover:bg-gradient-to-r group-hover:from-green-400 group-hover:to-blue-500 group-hover:text-transparent group-hover:bg-clip-text"></i>
+                    </a>
+                    <a href="/community">
+                        <span class="hidden ml-2 text-[14px]">Community</span>
+                    </a>
+                </div>
+                <div class="menu-item flex items-center">
+                    <a href="/Future_plans" class="relative group">
+                        <i class="ri-bard-fill text-[20px] transition-all duration-300 ease-in-out group-hover:bg-gradient-to-r group-hover:from-yellow-400 group-hover:to-red-500 group-hover:text-transparent group-hover:bg-clip-text"></i>
+                    </a>
+                    <a href="/Future_plans">
+                        <span class="hidden ml-2 text-[14px]">Future Plans</span>
+                    </a>
+                </div>
+                <!-- <div class="menu-item flex items-center">
+                    <a href="/trash" class="relative group">
+                        <i class="ri-delete-bin-fill text-[20px] transition-all duration-300 ease-in-out group-hover:bg-gradient-to-r group-hover:from-red-400 group-hover:to-yellow-500 group-hover:text-transparent group-hover:bg-clip-text"></i>
+                    </a>
+                    <a href="/trash">
+                        <span class="hidden ml-2 text-[14px]">Bin</span>
+                    </a>
+                </div> -->
+                <div class="menu-item flex items-center">
+                    <a href="/notification" class="relative group">
+                        <i class="ri-notification-fill text-[20px] transition-all duration-300 ease-in-out group-hover:bg-gradient-to-r group-hover:from-red-400 group-hover:to-yellow-500 group-hover:text-transparent group-hover:bg-clip-text"></i>
+                    </a>
+                    <a href="/notification">
+                        <span class="hidden ml-2 text-[14px]">Nofication</span>
+                    </a>
+                </div>
+            </div>
+        
+            <!-- Spacer to push the logout icon to the bottom -->
+            <div id="logout" class="mt-auto flex items-center text-white cursor-pointer">
+                <a href="/logout" class="relative group">
+                    <i class="ri-logout-box-r-fill text-[20px] transition-all duration-300 ease-in-out group-hover:bg-gradient-to-r group-hover:from-blue-400 group-hover:to-purple-500 group-hover:text-transparent group-hover:bg-clip-text"></i>
+                </a>
+                <a href="/logout">
+                    <span class="hidden ml-2 text-[14px]">Logout</span>
+                </a>
+            </div>
+        </div>
+        
+        <script>
+
+            // Firebase Logout Functionality
+            const logoutButton = document.getElementById('logout');
+
+            logoutButton.addEventListener('click', () => {
+                signOut(auth).then(() => {
+                    console.log("User signed out");
+                    window.location.href = 'login.html';  // Redirect to the login page after sign-out
+                }).catch((error) => {
+                    console.error("Error during logout:", error);
+                });
+            });
+
+            // JavaScript to toggle the side menu
+            const menuIcon = document.getElementById('menu');
+            const sideMenu = document.getElementById('sidemenu');
+            const menuItems = document.querySelectorAll('.menu-item span');
+            const logoutLabel = document.querySelector('.mt-auto span');
+            const profileDetails = document.getElementById('profileDetails');
+        
+            menuIcon.addEventListener('click', () => {
+                // Toggle between expanded and collapsed states
+                if (sideMenu.classList.contains('w-[3%]')) {
+                    // Expand the side menu
+                    sideMenu.classList.remove('w-[3%]', 'items-center');
+                    sideMenu.classList.add('w-[22%]', 'items-start', 'pl-[15px]');
+                    
+                    // Show the profile details and menu item text labels
+                    profileDetails.classList.remove('hidden');
+                    menuItems.forEach(item => item.classList.remove('hidden'));
+                    logoutLabel.classList.remove('hidden');
+                } else {
+                    // Collapse the side menu
+                    sideMenu.classList.remove('w-[22%]', 'items-start', 'pl-[15px]');
+                    sideMenu.classList.add('w-[3%]', 'items-center');
+                    
+                    // Hide the profile details and text labels for each menu item
+                    profileDetails.classList.add('hidden');
+                    menuItems.forEach(item => item.classList.add('hidden'));
+                    logoutLabel.classList.add('hidden');
+                }
+            });
+        </script>
+                              
+        <div id="main_area" class="h-full w-[100%] flex flex-col px-[45px] py-[85px] gap-[30px]">
+            <h1>Notifications for {{ username }}</h1>
+
+            {% if notifications %}
+                <ul>
+                    {% for notification in notifications %}
+                    <li style="margin-bottom: 20px;" class="{% if notification['readStatus'] %} read {% else %} unread {% endif %}">
+                        <strong>{{ notification['message'] }}</strong><br>
+                        <em>{{ notification['timestamp'].strftime('%Y-%m-%d') }}</em>
+                    </li>                    
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No notifications found.</p>
+            {% endif %}
+
+
+        </div>
+    </main>  
+
+    <script>
+        function markAsRead(notificationId) {
+            fetch('/mark_as_read', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ notification_id: notificationId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "success") {
+                    // Optionally, update the style of the notification to indicate it's read
+                    document.getElementById(`notification-${notificationId}`).style.color = "gray";
+                    document.getElementById(`notification-${notificationId}`).style.opacity = "0.6";
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>        
+        
+</body>
+</html>

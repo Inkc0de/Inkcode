@@ -1,0 +1,11 @@
+login and signup working
+showing appropriate profile details
+personal project working
+user input asking even when not needed
+user input working {not for python and JS}
+added HTML and CSS option
+fixed major bugs
+save and show code working (open not working)
+collaborative working - (use grok for local hosting)
+editor_collab now take code name and language from homepage popup
+Chat feature working 

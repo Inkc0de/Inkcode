@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML Editor - Collaborative</title>
+
+    <!-- Firebase App (the core Firebase SDK) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <!-- Firebase Realtime Database -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <script>
+        // Your Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAsAjxes6vzJr0gfVz69dpLXtjabzIxVo0",
+            authDomain: "inkcode-56af8.firebaseapp.com",
+            databaseURL: "https://inkcode-56af8-default-rtdb.firebaseio.com",
+            projectId: "inkcode-56af8",
+            storageBucket: "inkcode-56af8.appspot.com",
+            messagingSenderId: "610257821163",
+            appId: "1:610257821163:web:8e3eecdac0a408adc68dae",
+            measurementId: "G-C504CHHC3W"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+    </script>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #1e1e1e;
+            color: #fff;
+        }
+
+        #editor-container {
+            display: flex;
+            height: 100vh;
+            margin: 0;
+            position: relative;
+            transition: width 0.2s ease-in-out;
+        }
+
+        #editor-section {
+            background-color: #1e1e1e;
+            width: 50%;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            transition: width 0.3s ease;
+        }
+
+        #editor {
+            background-color: #252526;
+            color: #dcdcdc;
+            height: 100%;
+            border: none;
+            font-family: 'Fira Code', monospace;
+            padding: 15px;
+            border-radius: 5px;
+            resize: none;
+            flex-grow: 1;
+        }
+
+        #preview-btn {
+            background-color: #007acc;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            width: fit-content;
+            align-self: flex-end;
+        }
+
+        #preview {
+            background-color: #2d2d2d;
+            padding: 20px;
+            border-left: 1px solid #444;
+            width: 50%;
+            overflow: auto;
+            position: relative;
+            transition: width 0.3s ease-in-out;
+        }
+
+        #fullscreen-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #007acc;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #preview-content {
+            background-color: #1e1e1e;
+            padding: 10px;
+            border-radius: 5px;
+            height: 100%;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #007acc;
+            font-size: 18px;
+            border-bottom: 1px solid #444;
+            padding-bottom: 10px;
+        }
+
+        /* Resizer */
+        #resizer {
+            width: 5px;
+            cursor: ew-resize;
+            background-color: #444;
+            height: 100%;
+            position: absolute;
+            left: 50%;
+            z-index: 1;
+            transition: left 0.3s ease-in-out;
+        }
+
+        #preview-btn:hover, #fullscreen-btn:hover {
+            background-color: #005f99;
+        }
+
+        .hide-preview #resizer {
+            display: none;
+        }
+
+        .hide-preview #preview {
+            width: 0;
+            visibility: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div id="editor-container">
+        <!-- Editor Section on the left -->
+        <div id="editor-section">
+            <textarea id="editor" placeholder="Write your HTML code here..."></textarea>
+            <button id="preview-btn">Show Preview</button>
+        </div>
+
+        <!-- Resizer for resizing the preview -->
+        <div id="resizer"></div>
+
+        <!-- Preview Section on the right -->
+        <div id="preview">
+            <h2>Live Preview</h2>
+            <button id="fullscreen-btn" onclick="openLivePreview()">Fullscreen</button>
+            <div id="preview-content"></div>
+        </div>
+    </div>
+
+    <script>
+        const editorSection = document.getElementById('editor-section');
+        const preview = document.getElementById('preview');
+        const resizer = document.getElementById('resizer');
+        const previewBtn = document.getElementById('preview-btn');
+        let isResizing = false;
+        let hidePreview = false;
+
+        resizer.addEventListener('mousedown', function (e) {
+            isResizing = true;
+            document.body.style.cursor = 'ew-resize';
+        });
+
+        document.addEventListener('mousemove', function (e) {
+            if (!isResizing) return;
+
+            const containerWidth = document.getElementById('editor-container').offsetWidth;
+            const newEditorWidth = e.pageX / containerWidth * 100;
+            const newPreviewWidth = 100 - newEditorWidth;
+
+            if (newPreviewWidth > 10) {
+                editorSection.style.width = newEditorWidth + '%';
+                preview.style.width = newPreviewWidth + '%';
+                resizer.style.left = newEditorWidth + '%';
+            } else {
+                hidePreview = true;
+                preview.style.width = '0';
+                preview.style.visibility = 'hidden';
+                resizer.style.display = 'none';
+            }
+        });
+
+        document.addEventListener('mouseup', function () {
+            isResizing = false;
+            document.body.style.cursor = '';
+        });
+
+        previewBtn.addEventListener('click', function () {
+            if (hidePreview) {
+                preview.style.visibility = 'visible';
+                preview.style.width = '50%';
+                editorSection.style.width = '50%';
+                resizer.style.left = '50%';
+                resizer.style.display = 'block';
+                hidePreview = false;
+            }
+
+            const htmlCode = document.getElementById('editor').value;
+            document.getElementById('preview-content').innerHTML = htmlCode;
+        });
+
+        function openLivePreview() {
+            const htmlCode = document.getElementById('editor').value;
+            const newTab = window.open();
+            newTab.document.write(`
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Live Preview</title>
+                </head>
+                <body>${htmlCode}</body>
+                </html>
+            `);
+            newTab.document.close();
+        }
+    </script>
+
+    <script>
+        // Firebase initialization check
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        } else {
+            firebase.app();
+        }
+
+        const database = firebase.database();
+
+        // Log Firebase connection success or errors
+        database.ref().on('value', (snapshot) => {
+            console.log('Firebase connected and database reference is working');
+        }, (error) => {
+            console.error('Firebase database error: ', error);
+        });
+
+        const editorRef = database.ref('collaborative_html_editor/content');
+
+        function updateFirebaseContent(content) {
+            editorRef.set({ htmlContent: content });
+        }
+
+        editorRef.on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                if (data.htmlContent !== document.getElementById('editor').value) {
+                    document.getElementById('editor').value = data.htmlContent;
+                    document.getElementById('preview-content').innerHTML = data.htmlContent;
+                }
+            } else {
+                console.log("No content available yet");
+            }
+        }, (error) => {
+            console.error("Error reading Firebase database: ", error);
+        });
+
+        document.getElementById('editor').addEventListener('input', function () {
+            const htmlCode = this.value;
+            updateFirebaseContent(htmlCode);
+        });
+    </script>
+</body>
+</html>

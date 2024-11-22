@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm/css/xterm.css" />
+
+    <style>
+        #editor {
+            height: 300px;
+            border: 1px solid #ddd;
+        }
+        #inputArea, #outputArea {
+            height: 100px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            background-color: black;
+            color: white;
+            overflow-y: auto;
+            padding: 5px;
+        }
+        #inputField {
+            margin-top: 10px;
+        }
+    </style>
+
+    <style>
+        #chat-container {
+            width: 300px; /* Set fixed width for the chat */
+            background-color: #2D2D2D; /* Dark background for the chat */
+            border-left: 1px solid #4F4E4E; /* Border color */
+            display: flex;
+            flex-direction: column;
+        }
+
+        #chat-box {
+            flex-grow: 1;
+            padding: 10px;
+            overflow-y: auto;
+            max-height: 400px; /* Limit height of chat window */
+        }
+
+        .message {
+            margin-bottom: 10px; /* Space between messages */
+            padding: 8px 12px; /* Inner padding for messages */
+            border-radius: 8px; /* Rounded message corners */
+            color: white; /* Text color for messages */
+            max-width: 70%; /* Limit message width */
+            word-wrap: break-word; /* Allow long words to wrap */
+        }
+
+        .message.sent {
+            background-color: #2670FF; /* Color for sent messages */
+            align-self: flex-end; /* Align sent messages to the right */
+        }
+
+        .message.received {
+            background-color: #383838; /* Color for received messages */
+            align-self: flex-start; /* Align received messages to the left */
+        }
+
+        #message-input {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid #ccc; /* Top border for input section */
+            background-color: #f1f1f1; /* Background color for input section */
+        }
+
+        #message {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px; /* Rounded corners */
+            margin-right: 10px; /* Space between input and button */
+        }
+
+        #send {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px; /* Rounded corners */
+        }
+
+        /* Add hover effect to send button */
+        #send:hover {
+            background-color: #0056b3; /* Darker shade on hover */
+        }
+    </style>
+
+</head>
+<body style="display: flex;">
+    <div id="main" style="height: 100%; width: 70%;">
+        <h1 id="projectTitle"></h1>
+        <div id="editor"></div>
+
+        <div id="input-tab" style="display: none;">
+            <h3>Input</h3>
+            <textarea id="user-input" placeholder="Enter your input..." rows="4" cols="50"></textarea>
+            <button id="submitInputBtn">Submit Input</button>
+        </div>
+
+        <button id="runBtn">Run Code</button>
+        <button id="saveBtn">Save Project</button>
+        <div id="inputArea">User Input:</div>
+        <div id="outputArea">Output:</div>
+    </div>
+    
+    <div id="chat-container" style="height: 100%; width: 30%;">
+        <div id="username" class="text-[#D7D7D7] text-sm">{{ username }}</div>
+        <div id="chat-box"></div>
+        <div id="message-input">
+            <input type="text" id="message" placeholder="Type a message..." />
+            <button id="send">Send</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script> <!-- using code mirror -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/c/c.min.js"></script>
+
+    <!-- Firebase scripts for non-module use -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script>
+        // Firebase configuration (use your own project's details)
+        var firebaseConfig = {
+            apiKey: "AIzaSyAsAjxes6vzJr0gfVz69dpLXtjabzIxVo0",
+            authDomain: "inkcode-56af8.firebaseapp.com",
+            databaseURL: "https://inkcode-56af8-default-rtdb.firebaseio.com",
+            projectId: "inkcode-56af8",
+            storageBucket: "inkcode-56af8.appspot.com",
+            messagingSenderId: "610257821163",
+            appId: "1:610257821163:web:8e3eecdac0a408adc68dae",
+            measurementId: "G-C504CHHC3W"
+        };
+    
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        let loggedInUser = null;
+        const database = firebase.database();
+        // Check Firebase Auth for the current user
+        firebase.auth().onAuthStateChanged(function(user) {
+            if (user) {
+                loggedInUser = user.displayName || user.email; // Use display name or email as username
+            }
+        });
+
+    </script>    
+
+    <script>
+        // Function to extract query parameters
+        function getQueryParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                projectName: params.get('name') || 'Untitled Project',
+                projectLanguage: params.get('language') || 'c'
+            };
+        }
+
+        const { projectName, projectLanguage } = getQueryParams();
+        document.getElementById('projectTitle').textContent = `Project: ${projectName} (${projectLanguage})`;
+
+        const editorRef = database.ref('projects/' + projectName); // Use the project name from the URL
+
+        const editor = CodeMirror(document.getElementById('editor'), {
+            mode: projectLanguage.toLowerCase(),
+            lineNumbers: true,
+            theme: 'default'
+        });
+
+        // Detect code changes and send to Firebase
+        editor.on("change", function(instance, changeObj) {
+            const {from, to, text} = changeObj;
+            console.log("Change from line", from.line, "to line", to.line);
+            console.log("Text changed:", text);
+        });
+
+        // Listen for code changes from Firebase and update the editor
+        editorRef.on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data && data.code !== editor.getValue()) {
+                editor.setValue(data.code);  // Update the editor content
+
+                // Show the last change information
+                if (data.lastChange) {
+                    const { user, line, timestamp } = data.lastChange;
+                    const formattedTime = new Date(timestamp).toLocaleString();
+                    
+                    const info = `Last change by ${user} at line ${line + 1} on ${formattedTime}`;
+                    // Optionally, display it in the editor or another UI element
+                    const changeInfoElement = document.createElement('div');
+                    changeInfoElement.textContent = info;
+                    document.body.appendChild(changeInfoElement);
+                }
+            }
+        });
+
+        const executeCode = async (input = '') => {
+            document.getElementById('inputArea').textContent = `User Input: ${input}`;
+            document.getElementById('outputArea').textContent = 'Running code...';
+
+            const code = editor.getValue();
+
+            try {
+                const response = await fetch('/run_code', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        code,
+                        userInput: input,
+                        language: projectLanguage.toLowerCase()
+                    }),
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    document.getElementById('outputArea').textContent = `Error: ${response.status}\n${errorText}`;
+                    return;
+                }
+
+                const result = await response.json();
+
+                // Check if the result indicates that user input is required
+                if (result.requiresInput) {
+                    document.getElementById('input-tab').style.display = 'block';
+                    document.getElementById('user-input').focus(); // Focus on the input textarea
+                } else {
+                    document.getElementById('input-tab').style.display = 'none';
+                    document.getElementById('outputArea').textContent = result.output || 'No output returned.';
+                }
+
+            } catch (error) {
+                document.getElementById('outputArea').textContent = `Fetch Error: ${error.message}`;
+            }
+        };
+
+        document.getElementById('runBtn').addEventListener('click', () => {
+            executeCode();  // Run code without input initially
+        });
+
+        document.getElementById('submitInputBtn').addEventListener('click', () => {
+            const userInput = document.getElementById('user-input').value;
+            if (userInput.trim() !== '') {
+                executeCode(userInput);  // Run code with user input
+                document.getElementById('user-input').value = '';  // Clear input field
+                document.getElementById('input-tab').style.display = 'none';  // Hide input tab after submission
+            }
+        });
+
+        // Open or create the IndexedDB database
+        const openDatabase = () => {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open('InkCodeDB', 2); // Ensure version is set to 2
+
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+
+                    // Create an object store if it doesn't already exist
+                    if (!db.objectStoreNames.contains('projects')) {
+                        db.createObjectStore('projects', { keyPath: 'id', autoIncrement: true });
+                    }
+                };
+
+                request.onsuccess = (event) => {
+                    resolve(event.target.result);
+                };
+
+                request.onerror = (event) => {
+                    reject(event.target.error);
+                };
+            });
+        };
+
+        const saveCode = async () => {
+            const db = await openDatabase(); // Open the database
+
+            const code = editor.getValue(); // Get the code from the editor
+            const projectName = localStorage.getItem('projectName') || 'Untitled Project';
+            const projectLanguage = localStorage.getItem('projectLanguage') || 'c';
+            const timestamp = new Date().toLocaleString(); // Get the current timestamp
+
+            const transaction = db.transaction('projects', 'readwrite'); // Start a transaction
+            const store = transaction.objectStore('projects'); // Get the object store
+
+            // Add the project data to the store
+            const projectData = {
+                name: projectName,      // Project name
+                language: projectLanguage, // Project language
+                timestamp: timestamp,   // Current timestamp
+                code: code,             // Actual code content
+            };
+
+            store.add(projectData); // Save the project data
+
+            transaction.oncomplete = () => {
+                console.log('Project saved successfully');
+            };
+
+            transaction.onerror = (event) => {
+                console.error('Error saving project:', event.target.error);
+            };
+        };
+
+        document.getElementById('saveBtn').addEventListener('click', saveCode); // Bind the save function to the button
+
+        //chat
+
+        var chatRef = database.ref('collab/chat');
+
+        // Get username from the session
+        var username = "{{ username }}"; // This is where the username from Flask will be injected
+
+        // Function to send a message with username
+        document.getElementById('send').onclick = function() {
+            var message = document.getElementById('message').value;
+            if (message.trim() !== '') {
+                chatRef.push({
+                    username: username,  // Send the username along with the message
+                    message: message
+                });
+                document.getElementById('message').value = ''; // Clear the input field
+            }
+        };
+
+        // Listen for chat messages and display them with username
+        chatRef.on('child_added', function(snapshot) {
+            var data = snapshot.val();
+            var chatBox = document.getElementById('chat-box');
+            var newMessage = document.createElement('div');
+            newMessage.classList.add('message', data.username === username ? 'sent' : 'received');
+            newMessage.textContent = data.username + ": " + data.message; // Display the username with the message
+            chatBox.appendChild(newMessage);
+
+            // Scroll to the bottom of the chat box
+            chatBox.scrollTop = chatBox.scrollHeight;
+        });
+    </script>
+
+    <script>
+        window.onload = function() {
+            const codeData = JSON.parse(localStorage.getItem('codeData'));
+            if (codeData) {
+                document.getElementById('codeName').textContent = codeData.name;
+                document.getElementById('codeLanguage').textContent = codeData.language;
+                document.getElementById('codeContent').textContent = codeData.code;
+            }
+        };
+    </script>
+</body>
+</html>

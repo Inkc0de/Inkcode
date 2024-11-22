@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='Logo - V3.png') }}">
+    <title>Inkcode - Contact Us</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-database-compat.js"></script>
+    <style>
+        body {
+            background-color: #000000;
+            /* Dark InkCode theme */
+            color: #ffffff;
+            /* Light text for contrast */
+            height: 100vh;
+            /* Full-screen height */
+        }
+    </style>
+</head>
+
+<body class="flex items-center justify-center h-screen">
+    <!-- Contact Form -->
+    <div class="w-full max-w-md p-6 bg-[#171717] rounded-lg shadow-md">
+        <h1 class="text-2xl font-semibold text-gray-200 text-center mb-4">Contact Us</h1>
+        <form id="contactForm" class="space-y-4">
+            <!-- Name Field -->
+            <div>
+                <label for="name" class="block text-sm text-gray-400 mb-1">Name</label>
+                <input type="text" id="name" name="name" placeholder="Enter your name"
+                    class="w-full px-4 py-2 bg-[#171717] text-gray-200 border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <!-- Email Field -->
+            <div>
+                <label for="email" class="block text-sm text-gray-400 mb-1">Email</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email"
+                    class="w-full px-4 py-2 bg-[#171717] text-gray-200 border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <!-- Message Field -->
+            <div>
+                <label for="message" class="block text-sm text-gray-400 mb-1">Message</label>
+                <textarea id="message" name="message" rows="4" placeholder="Write your message"
+                    class="w-full px-4 py-2 bg-[#171717] text-gray-200 border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+            </div>
+            <!-- Submit Button -->
+            <div>
+                <button type="submit"
+                    class="w-full px-4 py-2 bg-blue-700 text-white font-semibold rounded hover:bg-blue-900 focus:outline-none">
+                    Send Message
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: 'AIzaSyBiRP_PJH38Gu5awnyOSW2qBCS0Hx3xOvQ',
+            authDomain: 'inkcode-cadec.firebaseapp.com',
+            projectId: 'inkcode-cadec',
+            storageBucket: "inkcode-56af8.appspot.com",
+            messagingSenderId: '342069436728',
+            appId: '1:342069436728:web:63adcd0ef4fd65b7b821cd',
+            measurementId: 'G-3L6ZJ1GK2V',
+            databaseURL: 'https://inkcode-56af8-default-rtdb.firebaseio.com/'
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Form submission handler
+        document.getElementById("contactForm").addEventListener("submit", function (event) {
+            event.preventDefault(); // Prevent default form submission
+            const name = document.getElementById("name").value;
+            const email = document.getElementById("email").value;
+            const message = document.getElementById("message").value;
+
+            if (name && email && message) {
+                const contactRef = database.ref("contacts").push();
+                contactRef.set({
+                    name: name,
+                    email: email,
+                    message: message,
+                    timestamp: new Date().toISOString()
+                }).then(() => {
+                    alert("Message sent successfully!");
+                    document.getElementById("contactForm").reset();
+                }).catch((error) => {
+                    console.error("Error saving message: ", error);
+                    alert("Failed to send message. Please try again.");
+                });
+            } else {
+                alert("Please fill in all fields.");
+            }
+        });
+    </script>
+</body>
+
+</html>

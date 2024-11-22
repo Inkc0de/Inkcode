@@ -1,0 +1,5 @@
+login and signup working
+showing appropriate profile details
+personal project working
+user input working {not for python and JS}
+added HTML and CSS option

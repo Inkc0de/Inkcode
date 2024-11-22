@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Inkcode - Editor</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='Logo - V3.png') }}">
+
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        /* CSS boilerplate */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html, body {
+            height: 100%;
+            width: 100%;
+            font-family: "Poppins", sans-serif;
+        }
+        body {
+            height: 100vh;
+            width: 100vw;
+            background: linear-gradient(180deg, #171717 0%, #000000 100%);
+        }
+
+        #editor-container {
+            display: flex;
+            height: 100vh;
+            margin: 0;
+            position: relative;
+            transition: width 0.2s ease-in-out; /* Smooth transition */
+        }
+
+        #editor-section {
+            background-color: #1e1e1e;
+            width: 50%;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            transition: width 0.3s ease; /* Smooth resizing */
+        }
+
+        #editor {
+            background-color: #1F1F1F;
+            color: #dcdcdc;
+            height: 100%;
+            border: none;
+            font-family: 'Fira Code', monospace;
+            padding: 15px;
+            border-radius: 5px;
+            resize: none;
+            flex-grow: 1;
+        }
+
+        #preview {
+            background-color: #1F1F1F;
+            padding: 20px;
+            /* border-left: 1px solid #444; */
+            width: 50%;
+            overflow: auto;
+            position: relative;
+            transition: width 0.3s ease-in-out; /* Smooth resizing */
+        }
+
+        #fullscreen-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #000000;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #preview-content {
+            /* background-color: #1e1e1e; */
+            /* padding: 10px; */
+            border-radius: 5px;
+            font-family: 'Times New Roman', Times, serif;
+            height: 100%;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #007acc;
+            font-size: 18px;
+            border-bottom: 1px solid #444;
+            padding-bottom: 10px;
+        }
+
+        /* Resizer */
+        #resizer {
+            width: 5px;
+            cursor: ew-resize;
+            background-color: #44444400;
+            height: 100%;
+            position: absolute;
+            left: 50%;
+            z-index: 1;
+            transition: left 0.3s ease-in-out;
+        }
+
+        ::-webkit-scrollbar-track {
+            -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+            background-color: transparent;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            background-color: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #ffffff;
+            border-radius: 100px;
+        }
+
+        /* Button hover effects */
+        #fullscreen-btn:hover {
+            background-color: #101010;
+        }
+
+        /* Hide the resizer when the preview is not visible */
+        .hide-preview #resizer {
+            display: none;
+        }
+
+        .hide-preview #preview {
+            width: 0;
+            visibility: hidden;
+        }
+    </style>
+
+    <style>
+        /* Override Tailwind styles */
+        #preview-content.no-tailwind * {
+            all: unset; /* Resets all styles */
+        }
+    </style>
+
+    <style>
+        .tooltip-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip {
+            visibility: hidden;
+            width: 100px; /* Adjusted width */
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px 0;
+            font-size: 10px; /* Smaller text size */
+            position: absolute;
+            z-index: 1;
+            top: 125%; /* Position below the icon */
+            left: 50%; /* Move it further to the right side */
+            margin-left: -20px; /* Adjust positioning to move the tooltip */
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip::after {
+            content: "";
+            position: absolute;
+            bottom: 100%; /* Arrow pointing upwards */
+            left: 20%; /* Adjust arrow to align with the right tooltip */
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: transparent transparent #555 transparent;
+        }
+
+        .tooltip-container:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+
+    </style>
+
+</head>
+<body class="p-[15px] flex flex-col gap-[12px]">
+    
+    <div id="nav" class="h-[7%] w-[100%] flex bg-[#1F1F1F] rounded-[15px] items-center justify-between px-[15px]">
+        <div id="right" class="flex gap-[15px] font-[500]">
+            <div class="tooltip-container">
+                <i class="ri-equalizer-2-fill text-[#555555]" id="icon"></i>
+                <div class="tooltip" id="tooltip">Feature Coming Soon</div>
+            </div>
+            <h1 id="projectTitle" class="text-[#555555]"></h1>
+        </div>
+        <div id="left" class="flex gap-[9px] text-[17px] text-white">
+            <a href="/homepage"><i class="ri-home-4-fill cursor-pointer"></i></a>
+            <i class="ri-save-fill cursor-pointer" id="saveBtn"></i>
+            <i class="ri-play-large-fill cursor-pointer" id="preview-btn"></i>
+        </div>
+    </div>
+
+    <div id="editor-container" class="gap-[15px]">
+        <!-- Editor Section on the left -->
+        <div id="editor-section" class="rounded-[20px] gap-[15px]">
+            <div id="address" class="flex gap-[15px] items-center">
+                <div id="langICNbg" class="h-fit w-fit py-[1px] px-[5px] flex items-center justify-center bg-[#FFEA00] rounded-[15px]">
+                    <div id="langICN" class="font-[800] text-black text-[12px] capitalize"></div>
+                </div>
+                <div id="pagination" class="text-[#555555] font-[500]">
+                    
+                </div>
+            </div>
+            <textarea id="editor" placeholder="Write your HTML code here..."></textarea>
+            <!-- <button id="preview-btn">Show Preview</button> -->
+        </div>
+
+        <!-- Resizer for resizing the preview -->
+        <div id="resizer"></div>
+
+        <script>
+            function openLivePreview() {
+                const previewContent = document.querySelector("#preview-content");
+                const shadowRoot = previewContent.attachShadow({ mode: "open" });
+                shadowRoot.innerHTML = `
+                    <style>
+                        /* Your custom CSS here */
+                        button {
+                            background: red;
+                        }
+                    </style>
+                    <button>Custom Button</button>
+                `;
+            }
+        </script>
+
+        <!-- Preview Section on the right -->
+        <div id="preview" class="rounded-[20px]">
+            <!-- <h2>Live Preview</h2> -->
+            <div id="fullscreen-btn" onclick="openLivePreview()">
+                <i class="ri-expand-diagonal-s-line" ></i>
+            </div>
+            <!-- <button id="fullscreen-btn" onclick="openLivePreview()">Fullscreen</button> -->
+            <div id="preview-content" class="bg-white p-0 m-0"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import Firebase App and Database
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app.js";
+        import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-database.js";
+        import { getStorage, ref as storageRef, uploadBytes } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-storage.js";
+
+        // Your Firebase configuration
+        const firebaseConfig = {
+            apiKey: 'AIzaSyBiRP_PJH38Gu5awnyOSW2qBCS0Hx3xOvQ',
+            authDomain: 'inkcode-cadec.firebaseapp.com',
+            projectId: 'inkcode-cadec',
+            storageBucket: "inkcode-56af8.appspot.com",
+            messagingSenderId: '342069436728',
+            appId: '1:342069436728:web:63adcd0ef4fd65b7b821cd',
+            measurementId: 'G-3L6ZJ1GK2V',
+            databaseURL: 'https://inkcode-56af8-default-rtdb.firebaseio.com/' 
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const storage = getStorage(app);  // Initialize Firebase storage
+
+        const projectName = localStorage.getItem('projectName') || 'Untitled Project';
+        const projectLanguage = localStorage.getItem('projectLanguage') || 'c';
+        document.getElementById('projectTitle').innerHTML = `Inkcode Project : <span class="text-white font-[400]"> ${projectName}.${projectLanguage} </span>`;
+        document.getElementById('pagination').innerHTML = `Inkcode Project/<span class="text-white font-[400]"> ${projectName}.${projectLanguage} </span>`;
+        document.getElementById('langICN').innerHTML = `${projectLanguage}`;
+    </script>
+
+    <script>
+        const editorSection = document.getElementById('editor-section');
+        const preview = document.getElementById('preview');
+        const resizer = document.getElementById('resizer');
+        const previewBtn = document.getElementById('preview-btn');
+        let isResizing = false;
+        let hidePreview = false;
+
+        resizer.addEventListener('mousedown', function (e) {
+            isResizing = true;
+            document.body.style.cursor = 'ew-resize';
+        });
+
+        document.addEventListener('mousemove', function (e) {
+            if (!isResizing) return;
+
+            // Calculate new widths for editor and preview
+            const containerWidth = document.getElementById('editor-container').offsetWidth;
+            const newEditorWidth = e.pageX / containerWidth * 100;
+            const newPreviewWidth = 100 - newEditorWidth;
+
+            if (newPreviewWidth > 10) { // Limit preview from going too small
+                editorSection.style.width = newEditorWidth + '%';
+                preview.style.width = newPreviewWidth + '%';
+                resizer.style.left = newEditorWidth + '%';
+            } else {
+                hidePreview = true;
+                preview.style.width = '0';
+                preview.style.visibility = 'hidden';
+                resizer.style.display = 'none';
+            }
+        });
+
+        document.addEventListener('mouseup', function () {
+            isResizing = false;
+            document.body.style.cursor = '';
+        });
+
+        previewBtn.addEventListener('click', function () {
+            if (hidePreview) {
+                preview.style.visibility = 'visible';
+                preview.style.width = '50%'; // Reset preview to original width
+                editorSection.style.width = '50%'; // Reset editor width
+                resizer.style.left = '50%';
+                resizer.style.display = 'block';
+                hidePreview = false;
+            }
+
+            const htmlCode = document.getElementById('editor').value;
+            document.getElementById('preview-content').innerHTML = htmlCode;
+        });
+
+        function openLivePreview() {
+            const htmlCode = document.getElementById('editor').value;
+            const newTab = window.open();
+            newTab.document.write(`
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Live Preview</title>
+                </head>
+                <body>${htmlCode}</body>
+                </html>
+            `);
+            newTab.document.close();
+        }
+    </script>
+</body>
+</html>

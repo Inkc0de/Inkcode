@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collaborative Code Editor</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        #editor-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        #editor {
+            flex-grow: 1;
+            width: 100%;
+            height: 100%;
+        }
+        #code-input-container {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background-color: #f1f1f1;
+            border-bottom: 1px solid #ccc;
+        }
+        #code-input {
+            flex-grow: 1;
+            margin-right: 10px;
+            padding: 5px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        #run {
+            padding: 5px 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        #output {
+            flex-grow: 1;
+            padding: 10px;
+            background-color: #f1f1f1;
+            overflow-y: auto;
+        }
+    </style>
+
+    <!-- Load Firebase v8 (non-modular CDN) FIRST -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+
+</head>
+<body>
+
+    
+    <div id="editor-container">
+        <div id="project-info" style="padding: 10px; background-color: #f1f1f1; border-bottom: 1px solid #ccc;">
+            <span id="project-name" style="font-weight: bold;">Project Name: <span id="name"></span></span>
+            <span id="project-language" style="margin-left: 20px;">Language: <span id="language"></span></span>
+        </div>
+    
+        <div id="code-input-container">
+            <textarea id="code-input" placeholder="Write your code here..."></textarea>
+            <button id="run">Run Code</button>
+        </div>
+        <div id="editor"></div>
+        <div id="output"></div>
+    </div>
+
+    <script>
+        // Firebase configuration - Replace with your Firebase configuration
+        var firebaseConfig = {
+          apiKey: "AIzaSyAsAjxes6vzJr0gfVz69dpLXtjabzIxVo0",
+          authDomain: "inkcode-56af8.firebaseapp.com",
+          databaseURL: "https://inkcode-56af8-default-rtdb.firebaseio.com",
+          projectId: "inkcode-56af8",
+          storageBucket: "inkcode-56af8.appspot.com",
+          messagingSenderId: "610257821163",
+          appId: "1:610257821163:web:8e3eecdac0a408adc68dae",
+          measurementId: "G-C504CHHC3W"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        var database = firebase.database();
+
+        // Realtime Database Reference
+        var codeRef = database.ref('collab/code');
+
+    </script>
+
+    <!-- Load Monaco Editor AFTER Firebase -->
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.33.0/min/vs/loader.js"></script>
+    <script>
+        // Initialize the Monaco editor
+        require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.33.0/min/vs' }});
+        require(['vs/editor/editor.main'], function() {
+            var editor = monaco.editor.create(document.getElementById('editor'), {
+                value: '',
+                language: 'javascript',
+                automaticLayout: true
+            });
+
+            // Emit code changes
+            editor.onDidChangeModelContent(function() {
+                var code = editor.getValue();
+                codeRef.set({
+                    code: code
+                });
+            });
+
+            // Listen for updates from Firebase
+            codeRef.on('value', function(snapshot) {
+                var data = snapshot.val();
+                if (data && data.code) {
+                    editor.setValue(data.code); // Update editor with the latest code from Firebase
+                    console.log('Code updated from Firebase:', data.code);
+                }
+            });
+
+            // Run code button functionality (placeholder for now)
+            document.getElementById('run').onclick = function() {
+                var code = editor.getValue();
+                document.getElementById('output').innerText = 'Running code:\n' + code; // Replace with actual execution logic
+            };
+        });
+    </script>
+
+    <script>
+    // Function to get URL parameters
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            var results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+
+        // Retrieve project name and language from URL
+        var projectName = getUrlParameter('name');
+        var projectLanguage = getUrlParameter('language');
+
+        // Display project name and language
+        document.getElementById('name').textContent = projectName || 'N/A';
+        document.getElementById('language').textContent = projectLanguage || 'N/A';
+    </script>
+
+</body>
+</html>

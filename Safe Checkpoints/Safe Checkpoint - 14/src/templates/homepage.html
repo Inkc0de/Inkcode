@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>InkCode - Homepage</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='Logo - V3.png') }}">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Firebase v8 CDN Scripts (Non-modular) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+
+    <script>
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+            apiKey: "AIzaSyAsAjxes6vzJr0gfVz69dpLXtjabzIxVo0",
+            authDomain: "inkcode-56af8.firebaseapp.com",
+            databaseURL: "https://inkcode-56af8-default-rtdb.firebaseio.com",
+            projectId: "inkcode-56af8",
+            storageBucket: "inkcode-56af8.appspot.com",
+            messagingSenderId: "610257821163",
+            appId: "1:610257821163:web:8e3eecdac0a408adc68dae",
+            measurementId: "G-C504CHHC3W"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        // Firebase services
+        const auth = firebase.auth();
+        const storage = firebase.storage();
+        const recentProjectsContainer = document.getElementById('recentProjects');
+
+    </script>
+
+    <style>
+        /* CSS boilerplate */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+            font-family: "Poppins", sans-serif;
+        }
+
+        body {
+            background: linear-gradient(180deg, #171717 0%, #000000 100%);
+        }
+
+        #create_new_p_projct {
+            background: linear-gradient(180deg, #1F1F1F -15%, #041C33 155%);
+        }
+
+        #newTeamProjectButton {
+            background: linear-gradient(180deg, #1F1F1F -15%, #200D38 155%);
+        }
+
+        ::-webkit-scrollbar-track {
+            -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+            background-color: transparent;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            background-color: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #ffffff;
+            border-radius: 100px;
+        }
+
+        select {
+            appearance: none;
+            /* Remove default styling */
+            -webkit-appearance: none;
+            /* For Safari */
+            -moz-appearance: none;
+            /* For Firefox */
+
+            background-color: #2D2D2D;
+            /* Ensure it matches the input background */
+            border: 1px solid #4F4E4E;
+            /* Match border with other elements */
+            padding: 0.5rem;
+            /* Add some padding */
+            color: white;
+            /* Text color */
+            width: 100%;
+            /* Full width */
+            border-radius: 0px;
+            /* Remove rounded corners */
+
+            /* Custom dropdown arrow */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M11.9999 10.8284L7.0502 15.7782L5.63599 14.364L11.9999 8L18.3639 14.364L16.9497 15.7782L11.9999 10.8284Z'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 20px;
+        }
+
+        /* Add a hover effect for smooth interaction */
+        select:hover {
+            background-color: #383838;
+            /* Slightly brighter background on hover */
+            border-color: #6E6E6E;
+            /* Slightly lighter border on hover */
+            cursor: pointer;
+        }
+
+        /* For smoother appearance of the dropdown */
+        select:focus {
+            outline: none;
+            /* Remove the default focus outline */
+            border-color: #007BFF;
+            /* Add a focus border color */
+            box-shadow: 0 0 10px rgba(0, 123, 255, 0.25);
+            /* Add a subtle glow on focus */
+        }
+
+        /* Custom dropdown list appearance */
+        select option {
+            padding: 10px;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        select option:hover {
+            background-color: #3B3B3B;
+            /* Background on hovering over options */
+        }
+    </style>
+
+</head>
+
+<body class="font-montserrat bg-[#2D2D2D] text-gray-300 h-screen">
+
+    <main class="flex h-[100%] w-full">
+        <div id="sidemenu"
+            class="h-full w-[3%] bg-[#1F1F1F] flex flex-col items-center py-[10px] transition-all duration-500 ease-in-out">
+            <!-- Top Section (menu, profile, icons) -->
+            <i id="menu" class="ri-menu-line text-white text-[20px] mb-[25px] cursor-pointer"></i>
+
+            <div class="flex items-center mb-[75px]">
+                <div id="profileICN"
+                    class="bg-green-600 rounded-full text-white text-[16px] font-[500] w-[28px] h-[28px] flex items-center justify-center">
+                    {{ username[0] | capitalize }}
+                </div>
+                <div id="profileDetails" class="flex flex-col ml-2 hidden">
+                    <div id="username" class="text-[#D7D7D7] text-sm">{{ username }}</div>
+                    <div id="email" class="text-[#BCBCBC] text-xs">{{ email }}</div>
+                </div>
+            </div>
+
+            <!-- Profile Section (Hidden initially) -->
+            <div id="profile"
+                class="flex flex-col bg-[#383838] rounded-lg w-[85%] h-[25%] justify-center items-center gap-2 hidden">
+                <div id="logout" class="pt-2 text-xs font-semibold cursor-pointer">Logout <i
+                        class="ri-logout-box-line"></i></div>
+            </div>
+
+            <!-- Icons with hover effect -->
+            <div class="flex flex-col gap-[10px] text-white items-start mt-4" id="menu-items">
+                <div class="menu-item flex items-center">
+                    <a href="/homepage" class="relative group">
+                        <i
+                            class="ri-home-4-fill text-[20px] transition-all duration-300 ease-in-out group-hover:bg-gradient-to-r group-hover:from-purple-400 group-hover:to-pink-500 group-hover:text-transparent group-hover:bg-clip-text"></i>
+                    </a>
+                    <a href="/homepage">
+                        <span class="hidden ml-2 text-[14px]">Home</span>
+                    </a>
+                </div>
+                <div class="menu-item flex items-center">
+                    <a href="/community" class="relative group">
+                        <i
+                            class="ri-global-fill text-[20px] transition-all duration-300 ease-in-out group-hover:bg-gradient-to-r group-hover:from-green-400 group-hover:to-blue-500 group-hover:text-transparent group-hover:bg-clip-text"></i>
+                    </a>
+                    <a href="/community">
+                        <span class="hidden ml-2 text-[14px]">Community</span>
+                    </a>
+                </div>
+                <div class="menu-item flex items-center">
+                    <a href="/Future_plans" class="relative group">
+                        <i
+                            class="ri-bard-fill text-[20px] transition-all duration-300 ease-in-out group-hover:bg-gradient-to-r group-hover:from-yellow-400 group-hover:to-red-500 group-hover:text-transparent group-hover:bg-clip-text"></i>
+                    </a>
+                    <a href="/Future_plans">
+                        <span class="hidden ml-2 text-[14px]">Future Plans</span>
+                    </a>
+                </div>
+                <div class="menu-item flex items-center">
+                    <a href="/trash" class="relative group">
+                        <i
+                            class="ri-delete-bin-fill text-[20px] transition-all duration-300 ease-in-out group-hover:bg-gradient-to-r group-hover:from-red-400 group-hover:to-yellow-500 group-hover:text-transparent group-hover:bg-clip-text"></i>
+                    </a>
+                    <a href="/trash">
+                        <span class="hidden ml-2 text-[14px]">Bin</span>
+                    </a>
+                </div>
+                <div class="menu-item flex items-center">
+                    <a href="/notification" class="relative group" onclick="markNotificationsAsRead()">
+                        <i
+                            class="ri-notification-fill text-[20px] transition-all duration-300 ease-in-out group-hover:bg-gradient-to-r group-hover:from-red-400 group-hover:to-yellow-500 group-hover:text-transparent group-hover:bg-clip-text"></i>
+                    </a>
+                    <a href="/notification">
+                        <span class="hidden ml-2 text-[14px]">Notification</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Spacer to push the logout icon to the bottom -->
+            <div id="logout" class="mt-auto flex items-center text-white cursor-pointer">
+                <a href="/logout" class="relative group">
+                    <i
+                        class="ri-logout-box-r-fill text-[20px] transition-all duration-300 ease-in-out group-hover:bg-gradient-to-r group-hover:from-blue-400 group-hover:to-purple-500 group-hover:text-transparent group-hover:bg-clip-text"></i>
+                </a>
+                <a href="/logout">
+                    <span class="hidden ml-2 text-[14px]">Logout</span>
+                </a>
+            </div>
+        </div>
+
+        <script>
+
+            // Firebase Logout Functionality
+            const logoutButton = document.getElementById('logout');
+
+            logoutButton.addEventListener('click', () => {
+                signOut(auth).then(() => {
+                    console.log("User signed out");
+                    window.location.href = 'login.html';  // Redirect to the login page after sign-out
+                }).catch((error) => {
+                    console.error("Error during logout:", error);
+                });
+            });
+
+            // JavaScript to toggle the side menu
+            const menuIcon = document.getElementById('menu');
+            const sideMenu = document.getElementById('sidemenu');
+            const menuItems = document.querySelectorAll('.menu-item span');
+            const logoutLabel = document.querySelector('.mt-auto span');
+            const profileDetails = document.getElementById('profileDetails');
+
+            menuIcon.addEventListener('click', () => {
+                // Toggle between expanded and collapsed states
+                if (sideMenu.classList.contains('w-[3%]')) {
+                    // Expand the side menu
+                    sideMenu.classList.remove('w-[3%]', 'items-center');
+                    sideMenu.classList.add('w-[22%]', 'items-start', 'pl-[15px]');
+
+                    // Show the profile details and menu item text labels
+                    profileDetails.classList.remove('hidden');
+                    menuItems.forEach(item => item.classList.remove('hidden'));
+                    logoutLabel.classList.remove('hidden');
+                } else {
+                    // Collapse the side menu
+                    sideMenu.classList.remove('w-[22%]', 'items-start', 'pl-[15px]');
+                    sideMenu.classList.add('w-[3%]', 'items-center');
+
+                    // Hide the profile details and text labels for each menu item
+                    profileDetails.classList.add('hidden');
+                    menuItems.forEach(item => item.classList.add('hidden'));
+                    logoutLabel.classList.add('hidden');
+                }
+            });
+
+        </script>
+
+        <div id="main_area" class="h-full w-[100%] flex flex-col px-[45px] py-[85px] gap-[30px]">
+            <p class="text-[29px] capitalize font-[500] text-[#B1B1B1] px-[12px]">Welcome to Inkcode, <span
+                    class="text-white"> {{username}}</span></p>
+            <div id="new_prjct" class="flex h-fit w-fit gap-[25px] px-[12px]">
+                <div id="create_new_p_projct"
+                    class="flex bg-[#383838] h-fit w-fit gap-[15px] px-[20px] py-[22px] rounded-[18px] cursor-pointer">
+                    <div id="ICN">
+                        <i
+                            class="ri-pen-nib-fill text-[28px] text-white bg-[#2670FF] px-[10px] py-[10px] rounded-[100%]"></i>
+                    </div>
+                    <div id="text">
+                        <p class="text-white text-[18px]">New personal project</p>
+                        <p class="text-[14px] text-[#A0A0A0]">non - collaborative</p>
+                    </div>
+                </div>
+                <div id="newTeamProjectButton"
+                    class="flex bg-[#383838] h-fit w-fit gap-[15px] px-[20px] py-[22px] rounded-[18px] cursor-pointer">
+                    <div id="ICN">
+                        <i
+                            class="ri-pen-nib-fill text-[28px] text-white bg-[#8222FF] px-[10px] py-[10px] rounded-[100%]"></i>
+                    </div>
+                    <div id="text">
+                        <p class="text-white text-[18px]">New team project</p>
+                        <p class="text-[14px] text-[#A0A0A0]">collaborative</p>
+                    </div>
+                </div>
+            </div>
+            <h2 class="text-[#A1A1A1] text-[15px] px-[15px]">Saved Projects</h2>
+            <div id="savedprojects" class="flex flex-col gap-[10px] w-[100%] h-[100%] overflow-y-scroll">
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Modal for new project creation -->
+    <div id="newProjectModal" class="fixed inset-0 flex items-center justify-center hidden">
+        <!-- Full-Screen Overlay with Blur and Transparency -->
+        <div class="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm z-[-1]"></div>
+
+        <!-- Popup Content without Rounded Corners -->
+        <div class=" p-8 w-[400px] relative shadow-lg">
+            <!-- Close Button (X) -->
+            <i id="closeModal"
+                class="ri-close-line absolute top-2 right-2 transition hover:text-red-500 text-[20px] font-[600]"></i>
+            <!-- <button id="closeModal" class="absolute top-2 right-2 text-gray-400 text-xl font-bold transition hover:text-red-500">&times;</button> -->
+
+            <h2 class="text-white text-2xl font-semibold mb-6">Create New Project</h2>
+
+            <div>
+                <label class="block text-gray-400 mb-2">Project Name</label>
+                <input id="projectName" type="text"
+                    class="w-full bg-[#2D2D2D] rounded-[15px] border border-[#4F4E4E] p-3 mb-5 text-white focus:outline-none focus:border-blue-500 transition"
+                    required />
+            </div>
+
+            <div>
+                <label class="block text-gray-400 mb-2">Language</label>
+                <select id="projectLanguage"
+                    class="w-full bg-[#2D2D2D] border rounded-[15px] border-[#4F4E4E] p-3 mb-7 text-white focus:outline-none focus:border-blue-500 transition"
+                    required>
+                    <option value="C">C</option>
+                    <option value="Cpp">C++</option>
+                    <option value="Python">Python</option>
+                    <option value="JavaScript">JavaScript</option>
+                    <option value="Java">Java</option>
+                    <option value="HTML">HTML</option>
+                </select>
+            </div>
+
+            <!-- hidden discription tab -->
+            <div>
+                <label class="block text-gray-400 mb-1 hidden">Description (optional)</label>
+                <textarea id="projectDescription"
+                    class="w-full bg-[#2D2D2D] rounded-[15px] border hidden border-[#4F4E4E] rounded p-2 mb-4 text-white"></textarea>
+            </div>
+
+            <button id="createProjectBtn"
+                class="w-full bg-gradient-to-r rounded-[15px] from-blue-500 to-blue-700 text-white px-4 py-3 font-[500] hover:opacity-90 transition">Create
+                Project</button>
+        </div>
+    </div>
+
+    <!-- Modal for new team project creation -->
+    <div id="newTeamProjectModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+
+        <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-[-1]"></div>
+
+        <div class="p-8 rounded-lg w-[400px] relative">
+            <!-- Close Button (X) -->
+            <i id="closeTeamModal"
+                class="ri-close-line absolute top-2 right-2 transition hover:text-red-500 text-[20px] font-[600]"></i>
+
+            <h2 class="text-white text-xl mb-4">Create New Team Project</h2>
+            <div>
+                <label class="block text-gray-400 mb-1">Project Name</label>
+                <input id="teamProjectName" type="text"
+                    class="w-full bg-[#2D2D2D] rounded-[15px] border border-[#4F4E4E] p-3 mb-5 text-white focus:outline-none focus:border-blue-500 transition"
+                    required />
+            </div>
+            <div>
+                <label class="block text-gray-400 mb-1">Language</label>
+                <select id="teamProjectLanguage"
+                    class="w-full bg-[#2D2D2D] border rounded-[15px] border-[#4F4E4E] p-3 mb-7 text-white focus:outline-none focus:border-blue-500 transition"
+                    required>
+                    <option value="C">C</option>
+                    <option value="cpp">C++</option>
+                    <option value="Python">Python</option>
+                    <option value="JavaScript">JavaScript</option>
+                    <option value="Java">Java</option>
+                    <option value="HTML">HTML</option>
+                    <!-- Add more languages as needed -->
+                </select>
+            </div>
+            <button id="createTeamProject"
+                class="bg-blue-500  bg-gradient-to-r rounded-[15px] from-blue-500 to-blue-700 text-white rounded px-4 py-3 w-full">Create
+                Project</button>
+        </div>
+    </div>
+
+    <script>
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const modal = document.getElementById('newProjectModal');
+            const closeModalBtn = document.getElementById('closeModal');
+
+            // Open modal when "New personal project" is clicked
+            document.getElementById('create_new_p_projct').addEventListener('click', () => {
+                modal.classList.remove('hidden');
+            });
+
+            // Close modal when the "X" button is clicked
+            closeModalBtn.addEventListener('click', () => {
+                modal.classList.add('hidden');
+            });
+
+            // Close modal and create the project
+            document.getElementById('createProjectBtn').addEventListener('click', () => {
+                const projectName = document.getElementById('projectName').value;
+                const projectLanguage = document.getElementById('projectLanguage').value;
+                const projectDescription = document.getElementById('projectDescription').value;
+
+                if (projectName && projectLanguage) {
+                    localStorage.setItem('projectName', projectName);
+                    localStorage.setItem('projectLanguage', projectLanguage);
+                    if (projectDescription) {
+                        localStorage.setItem('projectDescription', projectDescription);
+                    } else {
+                        localStorage.removeItem('projectDescription'); // Remove if not provided
+                    }
+                    modal.classList.add('hidden');
+
+                    // Redirect based on language selection
+                    if (projectLanguage === "HTML" || projectLanguage === "html") {
+                        window.location.href = '/editor(2)'; // Redirect to HTML editor page
+                    } else {
+                        window.location.href = '/editor'; // Redirect to the regular editor
+                    }
+                } else {
+                    alert('Please fill out all required fields.');
+                }
+            });
+
+            document.getElementById('logout').addEventListener('click', () => {
+                window.location.href = '/logout'; // Redirect to login page after logout
+            });
+
+            // Populate recent projects section from IndexedDB
+            const projectsList = document.getElementById('projectsList');
+        });
+    </script>
+
+    <script>
+        // JavaScript for handling the new team project modal
+        document.getElementById('newTeamProjectButton').addEventListener('click', function () {
+            document.getElementById('newTeamProjectModal').classList.remove('hidden');
+        });
+
+        document.getElementById('closeTeamModal').addEventListener('click', function () {
+            document.getElementById('newTeamProjectModal').classList.add('hidden');
+        });
+
+        document.getElementById('createTeamProject').addEventListener('click', function () {
+            const projectName = document.getElementById('teamProjectName').value;
+            const projectLanguage = document.getElementById('teamProjectLanguage').value;
+
+            // Handle the creation of the new team project here (e.g., saving to the database)
+            // Redirect to the editor after creating the project
+            // Redirect based on language selection
+            if (projectLanguage === "HTML" || projectLanguage === "html") {
+                window.location.href = `/editor(2)_collab?name=${encodeURIComponent(projectName)}`; // Redirect to HTML editor page
+            } else {
+                window.location.href = `/editor_collab?name=${encodeURIComponent(projectName)}&language=${encodeURIComponent(projectLanguage)}`;
+            }
+        });
+    </script>
+
+    <script>
+        function fetchSavedProjects() {
+            const storageRef = firebase.storage().ref().child('projects'); // Folder in Firebase Storage
+            storageRef.listAll().then((result) => {
+                result.items.forEach((fileRef) => {
+                    fileRef.getMetadata().then((metadata) => {
+                        const fileName = metadata.name; // Get the filename
+                        const fileExtension = fileName.split('.').pop(); // Get the file extension (language)
+                        const isCollab = metadata.customMetadata?.isCollab === 'true'; // Retrieve isCollab from metadata
+
+                        // Format the save time to dd/mm/yyyy format
+                        const updatedDate = new Date(metadata.updated);
+                        const formattedDate = `${updatedDate.getDate().toString().padStart(2, '0')}/${(updatedDate.getMonth() + 1).toString().padStart(2, '0')}/${updatedDate.getFullYear()}`;
+                        const formattedTime = updatedDate.toLocaleTimeString(); // Keep time in default format
+                        const saveTime = `${formattedDate}, ${formattedTime}`; // Combine date and time
+
+                        fileRef.getDownloadURL().then((fileURL) => {
+                            // Create a div to hold the project details and buttons
+                            const projectDiv = document.createElement('div');
+                            projectDiv.classList.add('flex', 'justify-between', 'items-center', 'p-2', 'bg-[#1f1f1f]', 'rounded-lg', 'mx-4');
+
+                            // Create a container for project name and timestamp
+                            const projectInfo = document.createElement('div');
+                            projectInfo.classList.add('flex', 'flex-col', 'w-[70%]');
+
+                            // Create file name element
+                            const fileNameElement = document.createElement('p');
+                            fileNameElement.classList.add('text-white', 'text-m', 'font-semibold', 'px-4');
+                            fileNameElement.textContent = fileName;
+
+                            // Create timestamp element
+                            const timestampElement = document.createElement('p');
+                            timestampElement.classList.add('text-gray-400', 'text-sm', 'px-4', 'mt-1');
+                            timestampElement.textContent = `Saved: ${saveTime}`;
+
+                            // Append file name and timestamp to the projectInfo container
+                            projectInfo.appendChild(fileNameElement);
+                            projectInfo.appendChild(timestampElement);
+
+                            // Create Open button
+                            const openBtn = document.createElement('button');
+                            openBtn.classList.add('bg-blue-500', 'text-white', 'px-4', 'py-1', 'rounded-md', 'text-sm', 'open-button', 'w-[80px]', 'h-[35px]', 'm-4');
+                            openBtn.textContent = 'Open';
+                            openBtn.onclick = () => {
+                                openProject(fileName.replace(`.${fileExtension}`, ''), fileExtension, fileURL, isCollab);
+                            };
+
+                            // Create Delete button
+                            const deleteBtn = document.createElement('button');
+                            deleteBtn.classList.add('bg-red-500', 'text-white', 'px-4', 'py-1', 'rounded-md', 'text-sm', 'w-[80px]', 'h-[35px]', 'm-4');
+                            deleteBtn.textContent = 'Delete';
+                            deleteBtn.onclick = () => deleteProject(fileRef);
+
+                            // Append elements to the main project div
+                            projectDiv.appendChild(projectInfo);
+                            projectDiv.appendChild(openBtn);
+                            projectDiv.appendChild(deleteBtn);
+
+                            // Append the project div to the saved projects container
+                            document.getElementById('savedprojects').appendChild(projectDiv);
+                        }).catch((error) => {
+                            console.error("Error fetching file URL:", error);
+                        });
+                    }).catch((error) => {
+                        console.error("Error fetching metadata:", error);
+                    });
+                });
+            }).catch((error) => {
+                console.error('Error fetching saved projects:', error);
+            });
+        }
+
+        // Function to open the project in the editor page
+        const openProject = (projectName, projectLanguage, projectURL, isCollab) => {
+            // Store project details in localStorage
+            localStorage.setItem('projectName', projectName);
+            localStorage.setItem('projectLanguage', projectLanguage);
+            localStorage.setItem('projectURL', projectURL);
+
+            // Determine the editor page based on isCollab and projectLanguage
+            if (isCollab && projectLanguage === 'html') {
+                window.location.href = "/editor_collab(2)";
+            } else if (isCollab) {
+                window.location.href = "/editor_collab";
+            } else if (!isCollab && projectLanguage === 'html') {
+                window.location.href = "/editor(2)";
+            } else {
+                window.location.href = "/editor";
+            }
+        };
+
+        // Function to delete the project from Firebase Storage
+        function deleteProject(fileRef) {
+            if (confirm('Are you sure you want to delete this project?')) {
+                fileRef.delete().then(() => {
+                    console.log('File deleted successfully');
+                    // Refresh the saved projects list after deletion
+                    document.getElementById('savedprojects').innerHTML = ''; // Clear the list
+                    fetchSavedProjects(); // Re-fetch the projects
+                }).catch((error) => {
+                    console.error('Error deleting file:', error);
+                });
+            }
+        }
+
+        // Call the function to fetch and display saved projects on page load
+        fetchSavedProjects();
+
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - InkCode</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #121212;
+            color: #E0E0E0;
+        }
+
+        input,
+        textarea {
+            background-color: #1E1E1E;
+            color: #E0E0E0;
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #6B7280;
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #6366F1;
+            box-shadow: 0 0 0 2px #6366F1;
+        }
+    </style>
+</head>
+
+<body class="font-sans">
+    <div class="min-h-screen flex flex-col justify-center items-center px-4">
+        <!-- Title -->
+        <h1 class="text-3xl font-semibold mb-6">Contact Us</h1>
+        <p class="text-sm text-gray-400 mb-8 text-center max-w-md">
+            Have a question, feedback, or need support? Fill out the form below and we’ll get back to you as soon as
+            possible.
+        </p>
+
+        <!-- Contact Form -->
+        <form id="contactForm" class="w-full max-w-md space-y-6">
+            <div>
+                <label for="name" class="block text-sm font-medium mb-2">Your Name</label>
+                <input type="text" id="name" name="name" placeholder="Enter your name" required
+                    class="w-full px-4 py-2 border border-gray-700 rounded-md focus:ring transition">
+            </div>
+            <div>
+                <label for="email" class="block text-sm font-medium mb-2">Your Email</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email" required
+                    class="w-full px-4 py-2 border border-gray-700 rounded-md focus:ring transition">
+            </div>
+            <div>
+                <label for="message" class="block text-sm font-medium mb-2">Message</label>
+                <textarea id="message" name="message" rows="5" placeholder="Write your message here" required
+                    class="w-full px-4 py-2 border border-gray-700 rounded-md focus:ring transition"></textarea>
+            </div>
+            <button type="submit"
+                class="w-full py-2 bg-indigo-600 text-white font-semibold rounded-md hover:bg-indigo-700 transition">
+                Send Message
+            </button>
+        </form>
+
+        <!-- Success Message -->
+        <p id="successMessage" class="hidden mt-6 text-green-500 font-medium">Thank you for contacting us! We’ll get
+            back to you soon.</p>
+    </div>
+
+</body>
+
+</html>

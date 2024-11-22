@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm/css/xterm.css" />
+    <style>
+        #editor {
+            height: 300px;
+            border: 1px solid #ddd;
+        }
+        #inputArea, #outputArea {
+            height: 100px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            background-color: black;
+            color: white;
+            overflow-y: auto;
+            padding: 5px;
+        }
+        #inputField {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="projectTitle"></h1>
+    <div id="editor"></div>
+
+    <div id="input-tab" style="display: none;">
+        <h3>Input</h3>
+        <textarea id="user-input" placeholder="Enter your input..." rows="4" cols="50"></textarea>
+        <button id="submitInputBtn">Submit Input</button>
+    </div>
+
+    <button id="runBtn">Run Code</button>
+    <div id="inputArea">User Input:</div>
+    <div id="outputArea">Output:</div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
+    
+    <script>
+        const projectName = localStorage.getItem('projectName') || 'Untitled Project';
+        const projectLanguage = localStorage.getItem('projectLanguage') || 'javascript';
+        document.getElementById('projectTitle').textContent = `Project: ${projectName} (${projectLanguage})`;
+
+        const editor = CodeMirror(document.getElementById('editor'), {
+            mode: projectLanguage.toLowerCase(),
+            lineNumbers: true,
+            theme: 'default'
+        });
+
+        const executeCode = async (input = '') => {
+            document.getElementById('inputArea').textContent = `User Input: ${input}`;
+            document.getElementById('outputArea').textContent = 'Running code...';
+
+            const code = editor.getValue();
+
+            try {
+                const response = await fetch('/run_code', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        code: code,
+                        userInput: input,
+                        language: projectLanguage
+                    }),
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    document.getElementById('outputArea').textContent = `Error: ${response.status}\n${errorText}`;
+                    return;
+                }
+
+                const result = await response.json();
+                document.getElementById('outputArea').textContent = result.output || 'No output returned.';
+                
+                // Check if user input is required
+                if (result.requiresInput) {
+                    document.getElementById('input-tab').style.display = 'block';
+                    document.getElementById('user-input').focus();
+                } else {
+                    document.getElementById('input-tab').style.display = 'none';
+                }
+
+            } catch (error) {
+                document.getElementById('outputArea').textContent = `Fetch Error: ${error.message}`;
+            }
+        };
+
+        document.getElementById('runBtn').addEventListener('click', () => executeCode());
+
+        document.getElementById('submitInputBtn').addEventListener('click', () => {
+            const userInput = document.getElementById('user-input').value;
+            executeCode(userInput);
+        });
+    </script>
+</body>
+</html>
