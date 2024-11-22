@@ -13,7 +13,7 @@
 
 - ~~add timestamps to saved code~~
 
-- create community in GitHub
+- ~~create community in GitHub~~
 - ~~make contact us~~ 
 
 - ~~main problems~~
@@ -26,6 +26,8 @@
 - ~~make mockups for inkcode~~
 - ~~fix code not uploading on GitHub~~
 - minor bugs & changes
+
+- release github version beta_01 until 24-11-2024
 
 * moved HTML option to Next Version 
 
