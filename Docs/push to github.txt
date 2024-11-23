@@ -13,3 +13,12 @@ git remote set-url origin https://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@githu
 git pull {optional}
 
 git push origin main
+
+-----------------
+for release
+git pull origin main  # or the relevant branch
+git add .
+git commit -m "Updated InkCode beta with new changes and bug fixes"
+git push origin main  # or your branch name
+git tag -a v1.0.0-beta2 -m "Updated beta release with new fixes and features"
+git push origin v1.0.0-beta2

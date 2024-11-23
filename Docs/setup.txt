@@ -1,6 +1,2 @@
 ngrok : ngrok http 8000
 flask run --host=0.0.0.0 --port=8000
-git remote add origin https://github.com/Inkc0de/inkcode
-git lfs track "D:\College Work\Assignments, Projects & Extra\College Projects\Inkcode\node_modules\nw\nwjs\nw.dll"
-
-ssh-keygen -t ed25519 -C "inkcode.com@gmail.com"
