@@ -13,8 +13,8 @@
 
 - ~~add timestamps to saved code~~
 
-- create community in GitHub
-- ~~make contact us~~ 
+- ~~create community in GitHub~~
+- ~~make contact us~~
 
 - ~~main problems~~
 	- ~~JAVA not working~~
@@ -25,7 +25,10 @@
 - ~~Behance page~~
 - ~~make mockups for inkcode~~
 - ~~fix code not uploading on GitHub~~
-- minor bugs & changes
+- ~~minor bugs & changes~~
+- ~~create and update realease note~~
+
+- release github version beta_01 until 24-11-2024
 
 * moved HTML option to Next Version 
 

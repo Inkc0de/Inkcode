@@ -20,3 +20,6 @@ mail system implemented - 10-11-2024
 notification implemented - 11-11-2024 
 open code worked - 20-11-24
 syntax highlight done - 21-11-2024
+user is typing done - 23-11-2024
+editor(2) and editor(2)_collab removed - 23-11-2024
+save code in all editor done - 23-11-2024

@@ -265,9 +265,10 @@ def editor_html_collab():
 @app.route('/editor_collab')
 def editor_collab():
     user_username = session.get('user_username')  # Retrieve the username from session
+    if not user_username:
+        return redirect(url_for('signin')) 
     print("Username from session:", user_username)  # Debugging line
-    return render_template('editor_collab.html', username=user_username)  # Pass the username to the template
-
+    return render_template('editor_collab.html', username=user_username)  # Pass the username to the template  # Pass the username to the template
 
 @app.route('/editor(2)')  # New route for the HTML editor
 def editor_html():
