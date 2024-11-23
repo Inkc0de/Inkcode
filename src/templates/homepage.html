@@ -552,22 +552,18 @@
         }
 
         const openProject = (projectName, projectLanguage, projectURL, isCollab) => {
-    // Save project data in localStorage
-    const projectData = {
-        name: projectName,
-        language: projectLanguage,
-        url: projectURL,
-        isCollab: isCollab,
-    };
-    localStorage.setItem('projectData', JSON.stringify(projectData));
+            // Store project details in localStorage
+            localStorage.setItem('projectName', projectName);
+            localStorage.setItem('projectLanguage', projectLanguage);
+            localStorage.setItem('projectURL', projectURL);
 
-    // Redirect to the appropriate editor
-    if (isCollab) {
-        window.location.href = "/editor_collab";
-    } else {
-        window.location.href = "/editor";
-    }
-};
+            // Navigate to the appropriate editor
+            if (isCollab) {
+                window.location.href = "/editor_collab";
+            } else {
+                window.location.href = "/editor";
+            }
+        };
 
 
         // Function to delete the project from Firebase Storage
