@@ -4,7 +4,7 @@
 	- ~~full screen fix~~ - {scraped}
     - ~~fix file name~~ - {scraped}
 
-- add save and load logic to all editors
+- ~~add save and load logic to all editors~~
 - ~~complete community & Future plans Page~~
 
 - ~~editor~~
@@ -20,7 +20,7 @@
 	- ~~JAVA not working~~
 	- ~~JS input not working~~ - {scraped}
 
-- Implement typing in chat {visible to all devices}
+- ~~Implement typing in chat {visible to all devices}~~
 
 - ~~Behance page~~
 - ~~make mockups for inkcode~~
@@ -31,5 +31,6 @@
 - release github version beta_01 until 24-11-2024
 
 * moved HTML option to Next Version 
+* opening editor_collab code in it moved in Next version
 
 -- date : 23-11-24

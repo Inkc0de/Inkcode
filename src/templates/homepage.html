@@ -551,24 +551,24 @@
             });
         }
 
-        // Function to open the project in the editor page
         const openProject = (projectName, projectLanguage, projectURL, isCollab) => {
-            // Store project details in localStorage
-            localStorage.setItem('projectName', projectName);
-            localStorage.setItem('projectLanguage', projectLanguage);
-            localStorage.setItem('projectURL', projectURL);
+    // Save project data in localStorage
+    const projectData = {
+        name: projectName,
+        language: projectLanguage,
+        url: projectURL,
+        isCollab: isCollab,
+    };
+    localStorage.setItem('projectData', JSON.stringify(projectData));
 
-            // Determine the editor page based on isCollab and projectLanguage
-            if (isCollab && projectLanguage === 'html') {
-                window.location.href = "/editor_collab(2)";
-            } else if (isCollab) {
-                window.location.href = "/editor_collab";
-            } else if (!isCollab && projectLanguage === 'html') {
-                window.location.href = "/editor(2)";
-            } else {
-                window.location.href = "/editor";
-            }
-        };
+    // Redirect to the appropriate editor
+    if (isCollab) {
+        window.location.href = "/editor_collab";
+    } else {
+        window.location.href = "/editor";
+    }
+};
+
 
         // Function to delete the project from Firebase Storage
         function deleteProject(fileRef) {
