@@ -12,7 +12,7 @@ CORS(app)
 app.secret_key = os.urandom(24)  # Generate a random secret key
 
 # Initialize Firebase Admin SDK
-cred = credentials.Certificate('D:\\College Work\\Assignments, Projects & Extra\\College Projects\\Inkcode\\src\\inkcode-cadec-firebase-adminsdk-m8ngo-4d5ebae0e7.json')  # Update this path
+cred = credentials.Certificate(r'D:\College Work\Assignments, Projects & Extra\inkcode\src\inkcode-cadec-firebase-adminsdk-m8ngo-4d5ebae0e7.json') # Update this path
 firebase_admin.initialize_app(cred)
 
 # Your Firebase project credentials

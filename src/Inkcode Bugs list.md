@@ -14,7 +14,7 @@
 - ~~add timestamps to saved code~~
 
 - ~~create community in GitHub~~
-- ~~make contact us~~ 
+- ~~make contact us~~
 
 - ~~main problems~~
 	- ~~JAVA not working~~
