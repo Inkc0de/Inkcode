@@ -25,7 +25,8 @@
 - ~~Behance page~~
 - ~~make mockups for inkcode~~
 - ~~fix code not uploading on GitHub~~
-- minor bugs & changes
+- ~~minor bugs & changes~~
+- ~~create and update realease note~~
 
 - release github version beta_01 until 24-11-2024
 
