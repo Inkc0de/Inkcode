@@ -101,9 +101,38 @@
             transform: translateY(-50%);
             cursor: pointer;
         }
+        .back-arrow {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+        .back-arrow a {
+            display: flex;
+            align-items: center;
+            color: #CECECE;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .back-arrow a:hover {
+            color: white;
+        }
+        .back-arrow svg {
+            width: 24px;
+            height: 24px;
+            margin-right: 5px;
+        }
     </style>
 </head>
 <body>
+    <!-- Back Arrow -->
+    <div class="back-arrow">
+        <a href="/">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+        </a>
+    </div>
     <div class="container" style="display: flex; flex-direction: column; align-items: start; width: fit-content;">
         <p style="color: white; font-weight: 500; font-size: 22px; margin-bottom: 5px;">Signup to Inkcode</p>
         <p style="color: #929292; font-size: 12px; margin-bottom: 12px;">collaborative coding platform, code with your team</p>
@@ -143,7 +172,7 @@
             }
         </script>
         <div class="link">
-            <p  style="font-weight: 500; font-size: 15px; color: #929292;">Already have an account? <a href="/signin">Sign In</a></p>
+            <p  style="font-weight: 500; font-size: 15px; color: #929292;">Already have an account? <a href="{{ url_for('index') }}">Sign In</a></p>
         </div>
     </div>
 </body>
