@@ -20,5 +20,5 @@ git pull origin main  # or the relevant branch
 git add .
 git commit -m "Updated InkCode beta with new changes and bug fixes"
 git push origin main  # or your branch name
-git tag -a v1.0.0-beta2 -m "Updated beta release with new fixes and features"
-git push origin v1.0.0-beta2
+git tag -a v1.0.0-beta1 -m "Github beta release"
+git push origin v1.0.0-beta1
